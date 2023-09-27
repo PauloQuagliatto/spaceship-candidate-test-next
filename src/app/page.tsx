@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const App = () => {
+const App = async () => {
   const fetchUserIds = async () => {
     return ["john.smith", "sara.lee", "jack.ma"];
   };
@@ -27,15 +27,29 @@ const App = () => {
   
   */
 
+  const usersIds = await fetchUserIds();
+  const onlineUsers = [];
+  for (const userId of usersIds) {
+    const user = await checkStatus(userId);
+    if (user.status === "online") {
+      const isEmailSent = await sendEmail(userId);
+      isEmailSent && onlineUsers.push({ ...user, isEmailSent });
+    }
+  }
+
   return (
     <div className="App">
       <div className="App-header">
         <div>
           All online users that introductions were sucessfully sent
           <ul>
-            <li>Student 1</li>
-            <li>Student 2</li>
-            <li>Student 3</li>
+            {onlineUsers.map((user, index) => {
+              return (
+                <li key={index}>
+                  <p>{user.id}</p>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </div>
